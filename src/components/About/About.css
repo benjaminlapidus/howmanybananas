@@ -1,0 +1,38 @@
+.sky{
+  width: 100%;
+  height: calc(100vh - 90px);
+  position: relative; 
+
+}
+
+@keyframes plane{
+  100%{
+    transform: translateY(15px);
+  }
+}
+
+
+.mountains{
+  position: absolute;
+  bottom:0;
+  height: 250px;
+  right: 0;
+  left: -2000px;
+  width: 500%;
+  background-image: url(https://i.ibb.co/zJbfkgZ/mountain.png);
+  background-repeat: repeat-x;
+  animation: mountains 30s linear infinite;
+}
+@keyframes mountains{
+  100%{
+    transform: translateX(1000px);
+  }
+}
+
+.airplane{
+  bottom: 30%;
+  margin-left: 60vw;
+  position: sticky;
+  z-index: 1;
+  animation: plane 3s alternate infinite;
+}

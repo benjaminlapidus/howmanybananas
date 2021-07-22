@@ -1,0 +1,161 @@
+html {
+    height: 100%;
+    overflow-x: hidden;
+}
+
+/*Nav bar */
+
+#main-nav {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0px;
+  font-size: 1.25rem;
+  transition: all .4s ease-in-out;
+}
+.nav__pages {
+  list-style: none;
+  display: flex;
+  justify-content: space-around;
+}
+.nav__pages li a {
+  text-decoration: none;
+  color: black;
+  font-weight: bold;
+  opacity: 0.5;
+  display: block;
+}
+
+.nav__pages li {
+  padding: 0px 24px;
+}
+
+.nav__pages li a:hover {
+  opacity: 1;
+  transform: rotate(4deg);
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50px;
+}
+
+
+.right {
+  float: right;
+}
+
+.left {
+  float:  left;
+}
+
+.center-text {
+  text-align: center;
+}
+
+
+.logo {
+  color: #fff;
+  font-weight: bold;
+  text-decoration: none;
+  height:50px;
+  opacity: .5;
+}
+
+
+#main-nav .logo:hover {
+  text-decoration: none;
+  opacity: 1;
+  color: white;
+  transform: rotate(3deg);
+}
+
+
+/* App */
+
+* {
+margin: 0px;
+font-family: 'Gotham Pro', sans-serif;
+}
+
+body {
+  transition: all .5s ease-in-out;
+  background-color: #FDD535;
+   height: 100%;
+}
+
+.padded {
+  margin: 0 auto;
+  width: 90%;
+  max-width: 1000px;
+}
+
+.full-width {
+  width: 100%;
+  max-width: 1920px;
+}
+
+footer {
+  background-color: #2C2925;
+  height: 400px;
+  width: 100%;
+}
+
+img {
+  object-fit: contain;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+h1 {font-size:  300%}
+
+/* Icon bar */
+
+/* Fixed/sticky icon bar (vertically aligned 50% from the top of the screen) */
+.icon-bar {
+  position: fixed;
+  bottom: 16px;
+  left: 0;
+}
+
+/* Style the icon bar links */
+.icon-bar a {
+  display: block;
+  text-align: center;
+  padding: 8px 16px;
+  transition: all 0.3s ease;
+  color: white;
+  font-size: 24px;
+  opacity: 0.7;
+}
+
+/* Style the social media icons with color, if you want */
+.icon-bar a:hover {
+  opacity: 1;
+}
+
+body {
+  overscroll-behavior-y: none;
+}
+
+@font-face {
+  font-family: "Gotham Pro";
+  src: url("./font/GothamProBlack.woff") format("woff");
+}
+
+@media screen and (max-width: 575px) {
+ main {
+  width: 90%;
+}
+}
+
+@media screen and (min-width: 1920px) {
+ .full-width {
+  margin: 0 auto;
+}
+
+.icon-bar {
+  display: none;
+}
+}
