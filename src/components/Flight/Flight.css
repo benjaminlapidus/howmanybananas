@@ -1,142 +1,7 @@
-.divider-row {
-  width:100%;
-  padding:0;
-  margin:0;
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  position:relative;
-}
-
-/* -- SVG CSS -- */
-
-.svg-separator{
-  display: block;
-  background: 0 0;
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  z-index: 9;
-  -webkit-transform: translateY(-100%) translateY(2px);
-  transform: translateY(-100%) translateY(2px);
-  width: 100%;
-}
-.svg-separator.bottom{
-  top: auto;
-  bottom: 0;
-}
-.sep1{
-  transform: translateY(-100%) translateY(2px) scale(1,1);
-  transform-origin: top;
-}
-.sep2 {
-  transform: translateY(-100%) translateY(2px) scale(1,1);
-  transform-origin: top;
-}
-.sep3 {
-  transform: translateY(-100%) translateY(2px) scale(1,1);
-  transform-origin: top;
-}
-.sep4 {
-  transform: translateY(-100%) translateY(2px) scale(1,1);
-  transform-origin: top;
-}
-.sep5 {
-  transform: translateY(-100%) translateY(2px) scale(1,1);
-  transform-origin: top;
-}
-.sep6 {
-  transform: translateY(-100%) translateY(2px) scale(1,1);
-  transform-origin: top;
-}
-.sep7 {
-  transform: translateY(-100%) translateY(2px) scale(1,1);
-  transform-origin: top;
-}
-.sep8 {
-  transform: translateY(-100%) translateY(2px) scale(1,1);
-  transform-origin: top;
-}
-.sep9 {
-  transform: translateY(0%) translateY(-2px) scale(-1,-1);
-  transform-origin: bottom;
-}
-.sep10 {
-  transform: translateY(-100%) translateY(2px) scale(1,1);
-  transform-origin: top;
-}
-.sep11 {
-  transform: translateY(-100%) translateY(2px) scale(1,1);
-  transform-origin: top;
-}
-.sep12 {
-  transform: translateY(-100%) translateY(2px) scale(1,1);
-  transform-origin: top;
-}
-
-#Flight__3-wrapper h2 {
-color: #333333;
-background-color: transparent;
-}
-
-#Flight__2-wrapper div .jumbotron, #Flight__3-wrapper div .jumbotron  {
-  background-color: transparent;
-}
-
-#Flight__2-wrapper div .jumbotron {
-  color: white;
-}
-
-#Flight__2-wrapper:first-child {
-  padding-top: 10vh;
-}
-
-.Flight__body h2 {
-  font-size: 300%;
-}
-
-.distance-subtitle {
-  line-height: 20px;
-  color:  #333333;
-}
-#stats-desc {
-  margin-top: 24px;
-    letter-spacing: 0.016em;
-    font-size: 17px;
-    color: black;
-}
-
-.airport {
-  color: black;
-  font-size: 400%;
-}
-
-.flight-location {
-  margin: 16vh 0;
-}
-
-.banana-stat {
-  font-size: 2em;
-}
-
-#bananaHighlight {
-    font-size: 3em;
-
-}
-
-#bananaStatWrapper {
-  padding-top:  16vh;
-}
-
 .bananaWrapper {
   display: flex;
   flex-flow: row wrap;
-  justify-content:  space-around;
-}
-
-.bananaWrapper div {
-  margin: 24px;
+  justify-content: space-around;
 }
 
 .bananaImg {
@@ -144,4 +9,60 @@ background-color: transparent;
   height: 75px;
 }
 
+.section-padding {
+  padding: 10rem 0;
+}
+
 /* -- Row BG Color -- */
+
+.container {
+  width: 100%;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.clouds {
+  position: relative;
+  z-index: 1001;
+}
+
+@keyframes plane {
+  100% {
+    transform: translateY(15px);
+  }
+}
+
+.mountains {
+  position: absolute;
+  bottom: 0;
+  height: clamp(200px, 250px, 300px);
+  right: 0;
+  left: -2000px;
+  width: 500%;
+  background-image: url(https://i.ibb.co/zJbfkgZ/mountain.png);
+  background-repeat: repeat-x;
+  animation: mountains 30s linear infinite;
+  z-index: 0;
+}
+
+@keyframes mountains {
+  100% {
+    transform: translateX(1000px);
+  }
+}
+
+.airplane {
+  bottom: 0;
+  margin-left: 60vw;
+  position: absolute;
+  height: 215px;
+  width: 215px;
+  z-index: 1;
+  animation: plane 3s alternate infinite;
+}
+
+@media screen and (min-width: 400px) {
+  .airplane {
+    bottom: 15%;
+  }
+}

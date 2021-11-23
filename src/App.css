@@ -1,22 +1,44 @@
 html {
-    height: 100%;
-    overflow-x: hidden;
+  height: 100%;
+  overflow-x: hidden;
 }
 
 /*Nav bar */
 
 #main-nav {
+  position: fixed;
   display: flex;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  z-index: 15000;
   justify-content: space-between;
-  padding: 12px 0px;
   font-size: 1.25rem;
-  transition: all .4s ease-in-out;
+  transition: all 0.4s ease-in-out;
+  -webkit-transition: #fff 0.5s cubic-bezier(0.25, 0.1, 0.3, 1);
+  transition: #fff 0.5s cubic-bezier(0.25, 0.1, 0.3, 1);
+  transition-property: #fff;
+  -webkit-transition-property: #fff, -webkit-backdrop-filter;
+  transition-property: #fff, -webkit-backdrop-filter;
+  transition-property: #fff, backdrop-filter;
+  transition-property: #fff, backdrop-filter, -webkit-backdrop-filter;
+  -webkit-backdrop-filter: saturate(180%) blur(15px);
+  backdrop-filter: saturate(180%) blur(15px);
+  background-color: rgba(255, 255, 255, 0.3);
 }
+
+.full-height {
+  height: 100vh;
+}
+
 .nav__pages {
   list-style: none;
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
+  margin: 0px;
+  padding: 12px 0px;
 }
+
 .nav__pages li a {
   text-decoration: none;
   color: black;
@@ -25,44 +47,30 @@ html {
   display: block;
 }
 
-.nav__pages li {
-  padding: 0px 24px;
-}
-
 .nav__pages li a:hover {
   opacity: 1;
   transform: rotate(4deg);
 }
 
-.center {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 50px;
+.bg-yellow {
+  background-color: #fdd535;
 }
 
-
-.right {
-  float: right;
+.bg-blue {
+  background-color: #007af5;
 }
 
-.left {
-  float:  left;
+.bg-brown {
+  background-color: #463e35;
 }
-
-.center-text {
-  text-align: center;
-}
-
 
 .logo {
   color: #fff;
   font-weight: bold;
   text-decoration: none;
-  height:50px;
-  opacity: .5;
+  height: 50px;
+  opacity: 0.5;
 }
-
 
 #main-nav .logo:hover {
   text-decoration: none;
@@ -71,24 +79,16 @@ html {
   transform: rotate(3deg);
 }
 
-
 /* App */
 
 * {
-margin: 0px;
-font-family: 'Gotham Pro', sans-serif;
+  margin: 0px;
+  font-family: "Gotham Pro", sans-serif;
 }
 
 body {
-  transition: all .5s ease-in-out;
-  background-color: #FDD535;
-   height: 100%;
-}
-
-.padded {
-  margin: 0 auto;
-  width: 90%;
-  max-width: 1000px;
+  transition: all 0.5s ease-in-out;
+  height: 100%;
 }
 
 .full-width {
@@ -97,7 +97,7 @@ body {
 }
 
 footer {
-  background-color: #2C2925;
+  background-color: #2c2925;
   height: 400px;
   width: 100%;
 }
@@ -108,11 +108,10 @@ img {
   max-height: 100%;
 }
 
-h1 {font-size:  300%}
-
 /* Icon bar */
 
 /* Fixed/sticky icon bar (vertically aligned 50% from the top of the screen) */
+
 .icon-bar {
   position: fixed;
   bottom: 16px;
@@ -120,6 +119,7 @@ h1 {font-size:  300%}
 }
 
 /* Style the icon bar links */
+
 .icon-bar a {
   display: block;
   text-align: center;
@@ -131,6 +131,7 @@ h1 {font-size:  300%}
 }
 
 /* Style the social media icons with color, if you want */
+
 .icon-bar a:hover {
   opacity: 1;
 }
@@ -144,18 +145,145 @@ body {
   src: url("./font/GothamProBlack.woff") format("woff");
 }
 
-@media screen and (max-width: 575px) {
- main {
-  width: 90%;
-}
-}
-
 @media screen and (min-width: 1920px) {
- .full-width {
-  margin: 0 auto;
+  .full-width {
+    margin: 0 auto;
+  }
+  .icon-bar {
+    display: none;
+  }
 }
 
-.icon-bar {
-  display: none;
+.size-0 {
+  font-size: 5rem;
 }
+@media screen and (min-width: 768px) {
+  .size-0 {
+    font-size: calc(10.5rem + 3.75 * ((100vw - 52rem) / 42));
+    line-height: 80%;
+  }
+}
+
+.size-1 {
+  font-size: 2.25rem;
+}
+@media screen and (min-width: 768px) {
+  .size-1 {
+    font-size: calc(2rem + 3.75 * ((100vw - 52rem) / 42));
+  }
+}
+
+.size-2 {
+  font-size: 2.125rem;
+  letter-spacing: -0.02em;
+}
+@media screen and (min-width: 768px) {
+  .size-2 {
+    font-size: calc(2.125rem + 2.875 * ((100vw - 48rem) / 42));
+  }
+}
+@media screen and (min-width: 1440px) {
+  .size-2 {
+    font-size: 5rem;
+  }
+}
+.size-3 {
+  font-size: 1.625rem;
+  letter-spacing: -0.02em;
+}
+@media screen and (min-width: 768px) {
+  .size-3 {
+    font-size: calc(1.625rem + 2 * ((100vw - 48rem) / 42));
+  }
+}
+@media screen and (min-width: 1440px) {
+  .size-3 {
+    font-size: 3.625rem;
+  }
+}
+.size-4 {
+  font-size: 1.625rem;
+  letter-spacing: -0.02em;
+}
+@media screen and (min-width: 768px) {
+  .size-4 {
+    font-size: calc(1.625rem + 0.75 * ((100vw - 48rem) / 42));
+  }
+}
+@media screen and (min-width: 1440px) {
+  .size-4 {
+    font-size: 2.375rem;
+  }
+}
+.size-5 {
+  font-size: 1.375rem;
+}
+@media screen and (min-width: 768px) {
+  .size-5 {
+    font-size: calc(1.375rem + 0.25 * ((100vw - 48rem) / 42));
+  }
+}
+@media screen and (min-width: 1440px) {
+  .size-5 {
+    font-size: 1.625rem;
+  }
+}
+.size-6 {
+  font-size: 1.125rem;
+}
+@media screen and (min-width: 768px) {
+  .size-6 {
+    font-size: calc(1.125rem + 0.25 * ((100vw - 48rem) / 42));
+  }
+}
+@media screen and (min-width: 1440px) {
+  .size-6 {
+    font-size: 1.375rem;
+  }
+}
+.size-7 {
+  font-size: 1rem;
+  letter-spacing: 0.01em;
+}
+@media screen and (min-width: 768px) {
+  .size-7 {
+    font-size: calc(1rem + 0.125 * ((100vw - 48rem) / 42));
+  }
+}
+@media screen and (min-width: 1440px) {
+  .size-7 {
+    font-size: 1.125rem;
+  }
+}
+.size-8 {
+  font-size: 0.875rem;
+  letter-spacing: 0.01em;
+}
+@media screen and (min-width: 768px) {
+  .size-8 {
+    font-size: calc(0.875rem + 0.125 * ((100vw - 48rem) / 42));
+  }
+}
+@media screen and (min-width: 1440px) {
+  .size-8 {
+    font-size: 1rem;
+  }
+}
+.size-9 {
+  font-size: 0.75rem;
+  letter-spacing: 0.01em;
+}
+@media screen and (min-width: 768px) {
+  .size-9 {
+    font-size: calc(0.75rem + 0.125 * ((100vw - 48rem) / 42));
+  }
+}
+@media screen and (min-width: 1440px) {
+  .size-9 {
+    font-size: 0.875rem;
+  }
+}
+
+.h-100 {
+  height: 100%;
 }

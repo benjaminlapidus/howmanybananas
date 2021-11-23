@@ -1,48 +1,174 @@
 // based on https://github.com/joshwnj/react-visibility-sensor/issues/118
 // by https://github.com/carloquilala
 
-import React, { useState, useEffect } from "react";
-import VisibilitySensor from "react-visibility-sensor";
-import Col from "react-bootstrap/Col";
-import Row from "react-bootstrap/Row";
-import Button from "react-bootstrap/Button";
-import "aos/dist/aos.css";
 import AOS from "aos";
+import "aos/dist/aos.css";
+import React, { useEffect, useState } from "react";
+import Button from "react-bootstrap/Button";
+import Col from "react-bootstrap/Col";
+import Container from "react-bootstrap/Container";
 import Jumbotron from "react-bootstrap/Jumbotron";
+import Row from "react-bootstrap/Row";
+import Rive from "rive-react";
+import { useRive } from "rive-react";
+import VisibilitySensor from "react-visibility-sensor";
+import { useLocation } from "react-router-dom";
+import airportLocation from "../../csv/airport-location.csv";
 import "./Flight.css";
 
 function Flight() {
   const [unit, setUnit] = useState(1);
-  const [numBananas, setNumBananas] = useState(720);
-  const distance = 4000;
+  const [flightDistance, setFlightDistance] = useState(0);
+  const [radiationExposure, setRadiationExposure] = useState(0);
+  const [flightTime, setFlightTime] = useState(0);
+  const [numBananas, setNumBananas] = useState(0);
+  const [toCode, setToCode] = useState("");
+  const [fromCode, setFromCode] = useState("");
 
-  function changeBg(sectionNumber) {
-    console.log("Changed: " + sectionNumber);
-    switch (sectionNumber) {
-      case 1:
-        document.body.style.backgroundColor = "#007AF5";
-        break;
-      case 2:
-        document.body.style.backgroundColor = "#007AF5";
-        break;
-      case 3:
-        document.body.style.backgroundColor = "#FDD535";
-        break;
-      case 4:
-        document.body.style.backgroundColor = "#463E35";
-        break;
-      default:
-        console.log(sectionNumber);
+  const location = useLocation();
+  let airports;
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    fetch(airportLocation, { mode: "no-cors" })
+      .then((res) => res.text())
+      .then((text) => CSVToArray(text, airports));
+    AOS.init({
+      duration: 250,
+      disable: "mobile",
+      offset: 100,
+      easing: "ease-in-out-quart",
+    });
+  }, []);
+
+  // Return array of string values, or NULL if CSV string not well formed.
+  function CSVToArray(csv, airports) {
+    let rows = csv.split("\n");
+    rows = rows.map(function (row) {
+      return row.split(",");
+    });
+    airports = rows;
+    calculateRadiation(airports);
+  }
+
+  function toggleUnits() {
+    setUnit(-unit);
+  }
+
+  function estimatedFlightTime(flightDistance) {
+    let time = flightDistance / 500;
+    setFlightTime(Math.ceil(time * 2) / 2);
+  }
+
+  function calculateRadiation(airports) {
+    const query = new URLSearchParams(location.search);
+    let from = decodeAirport(query.get("f"));
+    let to = decodeAirport(query.get("t"));
+
+    from = airports[parseInt(from)];
+    to = airports[parseInt(to)];
+
+    if (from == undefined) {
+      alert("Missing from location!");
+    } else {
+      setFromCode(from[1]);
+      setToCode(to[1]);
+
+      let fromLat = ConvertDMSToDD(
+        parseInt(from[5]),
+        parseInt(from[6]),
+        parseInt(from[7]),
+        from[8]
+      );
+      let fromLong = ConvertDMSToDD(
+        parseInt(from[9]),
+        parseInt(from[10]),
+        parseInt(from[11]),
+        from[12]
+      );
+
+      let toLat = ConvertDMSToDD(
+        parseInt(to[5]),
+        parseInt(to[6]),
+        parseInt(to[7]),
+        to[8]
+      );
+      let toLong = ConvertDMSToDD(
+        parseInt(to[9]),
+        parseInt(to[10]),
+        parseInt(to[11]),
+        to[12]
+      );
+
+      let flightDistance = haversineDistance(fromLat, fromLong, toLat, toLong);
+      setFlightDistance(flightDistance);
+      estimatedFlightTime(flightDistance);
     }
   }
 
-  const generateBananas = () => {
+  const haversineDistance = (lat1, lon1, lat2, lon2, isMiles = true) => {
+    const toRadian = (angle) => (Math.PI / 180) * angle;
+    const distance = (a, b) => (Math.PI / 180) * (a - b);
+    const RADIUS_OF_EARTH_IN_KM = 6371;
+
+    const dLat = distance(lat2, lat1);
+    const dLon = distance(lon2, lon1);
+
+    lat1 = toRadian(lat1);
+    lat2 = toRadian(lat2);
+
+    // Haversine Formula
+    const a =
+      Math.pow(Math.sin(dLat / 2), 2) +
+      Math.pow(Math.sin(dLon / 2), 2) * Math.cos(lat1) * Math.cos(lat2);
+    const c = 2 * Math.asin(Math.sqrt(a));
+
+    let finalDistance = RADIUS_OF_EARTH_IN_KM * c;
+
+    if (isMiles) {
+      finalDistance /= 1.60934;
+    }
+
+    return Math.floor(finalDistance);
+  };
+
+  function ConvertDMSToDD(degrees, minutes, seconds, direction) {
+    var dd = degrees + minutes / 60 + seconds / (60 * 60);
+
+    if (direction == "S" || direction == "W") {
+      dd = dd * -1;
+    } // Don't do anything for N or E
+    return dd;
+  }
+
+  function decodeAirport(input) {
+    let buff = new Buffer(input, "base64");
+    return buff.toString("ascii");
+  }
+
+  const params = {
+    src: require("./../../img/trip.riv").default,
+    autoplay: false,
+  };
+
+  const { RiveComponent, rive } = useRive(params);
+
+  function onButtonClick(isVisible) {
+    if (rive) {
+      if (isVisible) {
+        rive.play();
+      } else {
+        rive.pause();
+      }
+    }
+  }
+
+  const generateBananas = (numBananas) => {
     let content = [];
     for (let i = 0; i < numBananas; i++) {
       content.push(
         <div key={i}>
           <img
-           alt=""
             className="bananaImg"
             src="https://upload.wikimedia.org/wikipedia/commons/f/f7/Bananas.svg"
           />
@@ -52,145 +178,38 @@ function Flight() {
     return content;
   };
 
-  function toggleUnits() {
-    setUnit(-unit);
-  }
-
-  useEffect(() => {
-    document.body.style.backgroundColor = "#007AF5";
-
-    AOS.init({
-      duration: 250,
-      disable: "mobile",
-      offset: 100,
-      easing: "ease-in-out-quart",
-    });
-  }, []);
-
   return (
-    <main className="full-width" id="Flight">
-      <VisibilitySensor
-        partialVisibility
-        onChange={(isVisible) => (isVisible ? changeBg(1) : null)}
-        offset={{ top: 0 }}
-      >
-        {({ isVisible }) => (
-          <div>
-            <div className="colorSection">
-              {/*<Jumbotron className="Flight__body">
-                    <h2 className="center-text">How much radiation am I exposed to in an airplane?</h2>
-                    
-                  </Jumbotron>*/}
-
-              <div className="sky">
-                <Row data-aos="fade-up" id="Flight__2-wrapper">
-                  <Col lg={{ span: 5, offset: 1 }}>
-                    <Jumbotron className="Flight__body">
-                      <h2>How much radiation am I exposed to while flying?</h2>
-                    </Jumbotron>
-                  </Col>
-                </Row>
-
-                <div className="airplane">
-                  <img  alt="" src="https://i.ibb.co/SPpRcJz/airplane.png" />
-                </div>
-
-                <div className="mountains"></div>
-              </div>
-              <div className="divider-row red">
-                <svg
-                  id=""
-                  preserveAspectRatio="xMidYMax meet"
-                  className="svg-separator sep1"
-                  viewBox="0 0 1600 100"
-                  data-height="100"
-                >
-                  <path
-                    style={{ opacity: 1, fill: "#f2f2f2" }}
-                    d="M1040,56c0.5,0,1,0,1.6,0c-16.6-8.9-36.4-15.7-66.4-15.7c-56,0-76.8,23.7-106.9,41C881.1,89.3,895.6,96,920,96
-C979.5,96,980,56,1040,56z"
-                  ></path>
-                  <path
-                    style={{ opacity: 1, fill: "#fff" }}
-                    d="M1699.8,96l0,10H1946l-0.3-6.9c0,0,0,0-88,0s-88.6-58.8-176.5-58.8c-51.4,0-73,20.1-99.6,36.8
-c14.5,9.6,29.6,18.9,58.4,18.9C1699.8,96,1699.8,96,1699.8,96z"
-                  ></path>
-                  <path
-                    style={{ opacity: 1, fill: "#f2f2f2" }}
-                    d="M1400,96c19.5,0,32.7-4.3,43.7-10c-35.2-17.3-54.1-45.7-115.5-45.7c-32.3,0-52.8,7.9-70.2,17.8
-c6.4-1.3,13.6-2.1,22-2.1C1340.1,56,1340.3,96,1400,96z"
-                  ></path>
-                  <path
-                    style={{ opacity: 1, fill: "#f2f2f2" }}
-                    d="M320,56c6.6,0,12.4,0.5,17.7,1.3c-17-9.6-37.3-17-68.5-17c-60.4,0-79.5,27.8-114,45.2
-c11.2,6,24.6,10.5,44.8,10.5C260,96,259.9,56,320,56z"
-                  ></path>
-                  <path
-                    style={{ opacity: 1, fill: "#f2f2f2" }}
-                    d="M680,96c23.7,0,38.1-6.3,50.5-13.9C699.6,64.8,679,40.3,622.2,40.3c-30,0-49.8,6.8-66.3,15.8
-c1.3,0,2.7-0.1,4.1-0.1C619.7,56,620.2,96,680,96z"
-                  ></path>
-                  <path
-                    style={{ opacity: 1, fill: "#f2f2f2" }}
-                    d="M-40,95.6c28.3,0,43.3-8.7,57.4-18C-9.6,60.8-31,40.2-83.2,40.2c-14.3,0-26.3,1.6-36.8,4.2V106h60V96L-40,95.6
-z"
-                  ></path>
-                  <path
-                    style={{ opacity: 1, fill: "#fff" }}
-                    d="M504,73.4c-2.6-0.8-5.7-1.4-9.6-1.4c-19.4,0-19.6,13-39,13c-19.4,0-19.5-13-39-13c-14,0-18,6.7-26.3,10.4
-C402.4,89.9,416.7,96,440,96C472.5,96,487.5,84.2,504,73.4z"
-                  ></path>
-                  <path
-                    style={{ opacity: 1, fill: "#fff" }}
-                    d="M1205.4,85c-0.2,0-0.4,0-0.6,0c-19.5,0-19.5-13-39-13s-19.4,12.9-39,12.9c0,0-5.9,0-12.3,0.1
-c11.4,6.3,24.9,11,45.5,11C1180.6,96,1194.1,91.2,1205.4,85z"
-                  ></path>
-                  <path
-                    style={{ opacity: 1, fill: "#fff" }}
-                    d="M1447.4,83.9c-2.4,0.7-5.2,1.1-8.6,1.1c-19.3,0-19.6-13-39-13s-19.6,13-39,13c-3,0-5.5-0.3-7.7-0.8
-c11.6,6.6,25.4,11.8,46.9,11.8C1421.8,96,1435.7,90.7,1447.4,83.9z"
-                  ></path>
-                  <path
-                    style={{ opacity: 1, fill: "#fff" }}
-                    d="M985.8,72c-17.6,0.8-18.3,13-37,13c-19.4,0-19.5-13-39-13c-18.2,0-19.6,11.4-35.5,12.8
-c11.4,6.3,25,11.2,45.7,11.2C953.7,96,968.5,83.2,985.8,72z"
-                  ></path>
-                  <path
-                    style={{ opacity: 1, fill: "#fff" }}
-                    d="M743.8,73.5c-10.3,3.4-13.6,11.5-29,11.5c-19.4,0-19.5-13-39-13s-19.5,13-39,13c-0.9,0-1.7,0-2.5-0.1
-c11.4,6.3,25,11.1,45.7,11.1C712.4,96,727.3,84.2,743.8,73.5z"
-                  ></path>
-                  <path
-                    style={{ opacity: 1, fill: "#fff" }}
-                    d="M265.5,72.3c-1.5-0.2-3.2-0.3-5.1-0.3c-19.4,0-19.6,13-39,13c-19.4,0-19.6-13-39-13
-c-15.9,0-18.9,8.7-30.1,11.9C164.1,90.6,178,96,200,96C233.7,96,248.4,83.4,265.5,72.3z"
-                  ></path>
-                  <path
-                    style={{ opacity: 1, fill: "#fff" }}
-                    d="M1692.3,96V85c0,0,0,0-19.5,0s-19.6-13-39-13s-19.6,13-39,13c-0.1,0-0.2,0-0.4,0c11.4,6.2,24.9,11,45.6,11
-C1669.9,96,1684.8,96,1692.3,96z"
-                  ></path>
-                  <path
-                    style={{ opacity: 1, fill: "#fff" }}
-                    d="M25.5,72C6,72,6.1,84.9-13.5,84.9L-20,85v8.9C0.7,90.1,12.6,80.6,25.9,72C25.8,72,25.7,72,25.5,72z"
-                  ></path>
-                  <path
-                    style={{ opacity: 1, fill: "#fff" }}
-                    d="M-40,95.6C20.3,95.6,20.1,56,80,56s60,40,120,40s59.9-40,120-40s60.3,40,120,40s60.3-40,120-40
-s60.2,40,120,40s60.1-40,120-40s60.5,40,120,40s60-40,120-40s60.4,40,120,40s59.9-40,120-40s60.3,40,120,40s60.2-40,120-40
-s60.2,40,120,40s59.8,0,59.8,0l0.2,143H-60V96L-40,95.6z"
-                  ></path>
-                </svg>
-              </div>
-            </div>
+    <main id="Flight">
+      <Container fluid className="bg-blue full-height">
+        <Row className="h-100" data-aos="fade-up">
+          <Col sm={{ span: 8, offset: 1 }}>
+            <Jumbotron className="h-100 text-light d-flex align-items-center justify-content-center">
+              <h1 className="size-1">
+                How much radiation am I exposed to while flying?
+              </h1>
+            </Jumbotron>
+          </Col>
+        </Row>
+        <div className="airplane">
+          <img alt="" src="https://i.ibb.co/SPpRcJz/airplane.png" />
+        </div>
+        <div className="mountains">
+          <div style={{ position: "relative", height: "100%" }}>
+            <div
+              className="clouds"
+              style={{
+                width: "100%",
+                position: "absolute",
+                bottom: "0",
+                height: "45px",
+                backgroundImage: 'url("./svg.svg")',
+              }}
+            />
           </div>
-        )}
-      </VisibilitySensor>
+        </div>
+      </Container>
 
-      <div
-        style={{ zIndex: "10000", position: "relative", paddingTop: "40vh", color: "black", backgroundColor: "white" }}
-        className="colorSection"
-      >
+      <Container fluid className="bg-white section-padding">
         <Row data-aos="fade-up" id="Flight__3-wrapper">
           <Col sm={{ span: 12 }} lg={{ span: 6, offset: 1 }}>
             <Jumbotron className="Flight__body">
@@ -200,23 +219,14 @@ s60.2,40,120,40s59.8,0,59.8,0l0.2,143H-60V96L-40,95.6z"
                 {unit === 1
                   ? "ten to thirteen kilometers"
                   : "six to eight miles"}{" "}
-                above sea level. As the plane gets higher and higher, the
+                above sea level. As the airplane gets higher and higher, the
                 atmosphere gets thinner and thinner. Without as much atmosphere
-                to protect you, you'll receive more radiation.
+                to protect you, you'll receive higher exposure to radiation.
               </p>
             </Jumbotron>
           </Col>
           <Col sm={{ span: 1, offset: 11 }} lg={{ span: 2, offset: 3 }}>
-            <Button
-              className="sticky"
-              style={{
-                position: "sticky",
-                marginTop: "4rem",
-                top: "4rem",
-              }}
-              onClick={toggleUnits}
-              variant="outline-dark"
-            >
+            <Button onClick={toggleUnits} variant="outline-dark">
               {unit === 1 ? "Toggle Units 🌎" : "Toggle Units 🇺🇸"}
             </Button>{" "}
           </Col>
@@ -225,171 +235,90 @@ s60.2,40,120,40s59.8,0,59.8,0l0.2,143H-60V96L-40,95.6z"
         <Row
           data-aos="fade-up"
           id="Flight__2-wrapper"
-          className="justify-content-lg-center flight-location"
+          className="flight-location align-items-center"
         >
-          <Col lg={{ span: 4, offset: 0 }}>
-            <h2 className="center-text airport">JFK</h2>
+          <Col md={{ span: 4, offset: 0 }}>
+            <h2 className="text-end p-5 size-2">{fromCode}</h2>
           </Col>
-          <Col lg={{ span: 4, offset: 1 }}>
-            <h2 className="center-text airport">ROC</h2>
+          <Col md={{ span: 4, offset: 0 }}>
+            <VisibilitySensor
+              partialVisibility
+              offset={{ top: 10 }}
+              onChange={(isVisible) => onButtonClick(isVisible)}
+            >
+              <div style={{ height: "500px" }}>
+                <RiveComponent />
+              </div>
+            </VisibilitySensor>
+            {/* <Rive style={{height: "500px"}} src={require("./../../img/trip.riv").default} /> */}
+          </Col>
+          <Col md={{ span: 4, offset: 0 }}>
+            <h2 className="size-2 p-5">{toCode}</h2>
           </Col>
         </Row>
 
-        <Row
-          data-aos="fade-up"
-          style={{ marginTop: 48 }}
-          id="Flight__3-wrapper"
-          className="justify-content-lg-center"
-        >
+        <Row data-aos="fade-up" className="justify-content-center">
           <Col lg={{ span: 3, offset: 0 }}>
-            <Jumbotron style={{color:"#2e2e2e"}} className="Flight__body center-text">
-              <h2>
+            <Jumbotron className="text-center">
+              <h3 className="size-4">
                 {unit === 1
-                  ? Math.round(distance * 1.60934) + " km"
-                  : distance + " mi"}
-              </h2>
-              <p className="center-text distance-subtitle">Flight distance</p>
+                  ? Math.round(flightDistance * 1.60934) + " km"
+                  : flightDistance + " mi"}
+              </h3>
+              <p>Flight distance</p>
             </Jumbotron>
           </Col>
           <Col lg={{ span: 4, offset: 0 }}>
-            <Jumbotron style={{color: "black", fontSize: "1.2rem"}} className="Flight__body center-text">
-              <h2 style={{color: "black"}}>.0135 mSv</h2>
-              <p style={{color: "black"}} className="center-text distance-subtitle">
-                Estimated radiation exposure (millisieverts)
+            <Jumbotron className="text-center">
+              <h3 className="size-3">
+                {parseFloat(0.003 * flightTime).toFixed(4)} mSv
+              </h3>
+              <p>Estimated radiation exposure (millisieverts)</p>
+            </Jumbotron>
+          </Col>
+          <Col lg={{ span: 3, offset: 0 }}>
+            <Jumbotron className="text-center">
+              <h3 className="size-4">
+                {Math.floor(flightTime) == 0 ? "" : flightTime + " hour"}
+                {flightTime > 1 ? "s " : ""}
+                {flightTime - Math.floor(flightTime) !== 0 ? "30 minutes" : ""}
+              </h3>
+              <p>Estimated flight time</p>
+            </Jumbotron>
+          </Col>
+        </Row>
+      </Container>
+
+      <Container fluid className="bg-yellow section-padding">
+        <Row className="align-items-center" id="Flight__2-wrapper">
+          <Col md={{ span: 5, offset: 1 }}>
+            <Jumbotron
+              data-aos="fade-up"
+              style={{ color: "black" }}
+              className="Flight__body"
+            >
+              <h2>What's a millisievert!?</h2>
+              <p>
+                Sieverts are a measure of how much radiation is absorbed into
+                the body. No shade to Dr. Rolf Sievert, but sieverts can be
+                tricky to understand without context. That's where the bananas
+                come in.
+              </p>
+
+              <p>
+                Bananas are loaded with potassium! A natural variant of
+                potassium is potassium-40, a radioactive isotope. Since bananas
+                are slightly radioactive, we can use them as a unit to measure
+                radiation!
               </p>
             </Jumbotron>
           </Col>
-          <Col lg={{ span: 3, offset: 0 }}>
-            <Jumbotron style={{color:"#2e2e2e"}} className="Flight__body center-text">
-              <h2>4.5 hours</h2>
-              <p className="center-text distance-subtitle">Estimated flight time</p>
-            </Jumbotron>
-          </Col>
-
+          <Col md={{ span: 5, offset: 1 }}></Col>
         </Row>
-        <div className="divider-row red">
-          <svg
-            id=""
-            preserveAspectRatio="xMidYMax meet"
-            className="svg-separator sep1"
-            viewBox="0 0 1600 100"
-            data-height="100"
-          >
-            <path
-              style={{ opacity: 1, fill: "#FDD535" }}
-              d="M1040,56c0.5,0,1,0,1.6,0c-16.6-8.9-36.4-15.7-66.4-15.7c-56,0-76.8,23.7-106.9,41C881.1,89.3,895.6,96,920,96
-C979.5,96,980,56,1040,56z"
-            ></path>
-            <path
-              style={{ opacity: 1, fill: "#FDD535" }}
-              d="M1699.8,96l0,10H1946l-0.3-6.9c0,0,0,0-88,0s-88.6-58.8-176.5-58.8c-51.4,0-73,20.1-99.6,36.8
-c14.5,9.6,29.6,18.9,58.4,18.9C1699.8,96,1699.8,96,1699.8,96z"
-            ></path>
-            <path
-              style={{ opacity: 1, fill: "#FDD535" }}
-              d="M1400,96c19.5,0,32.7-4.3,43.7-10c-35.2-17.3-54.1-45.7-115.5-45.7c-32.3,0-52.8,7.9-70.2,17.8
-c6.4-1.3,13.6-2.1,22-2.1C1340.1,56,1340.3,96,1400,96z"
-            ></path>
-            <path
-              style={{ opacity: 1, fill: "#FDD535" }}
-              d="M320,56c6.6,0,12.4,0.5,17.7,1.3c-17-9.6-37.3-17-68.5-17c-60.4,0-79.5,27.8-114,45.2
-c11.2,6,24.6,10.5,44.8,10.5C260,96,259.9,56,320,56z"
-            ></path>
-            <path
-              style={{ opacity: 1, fill: "#FDD535" }}
-              d="M680,96c23.7,0,38.1-6.3,50.5-13.9C699.6,64.8,679,40.3,622.2,40.3c-30,0-49.8,6.8-66.3,15.8
-c1.3,0,2.7-0.1,4.1-0.1C619.7,56,620.2,96,680,96z"
-            ></path>
-            <path
-              style={{ opacity: 1, fill: "#FDD535" }}
-              d="M-40,95.6c28.3,0,43.3-8.7,57.4-18C-9.6,60.8-31,40.2-83.2,40.2c-14.3,0-26.3,1.6-36.8,4.2V106h60V96L-40,95.6
-z"
-            ></path>
-            <path
-              style={{ opacity: 1, fill: "#FDD535" }}
-              d="M504,73.4c-2.6-0.8-5.7-1.4-9.6-1.4c-19.4,0-19.6,13-39,13c-19.4,0-19.5-13-39-13c-14,0-18,6.7-26.3,10.4
-C402.4,89.9,416.7,96,440,96C472.5,96,487.5,84.2,504,73.4z"
-            ></path>
-            <path
-              style={{ opacity: 1, fill: "#FDD535" }}
-              d="M1205.4,85c-0.2,0-0.4,0-0.6,0c-19.5,0-19.5-13-39-13s-19.4,12.9-39,12.9c0,0-5.9,0-12.3,0.1
-c11.4,6.3,24.9,11,45.5,11C1180.6,96,1194.1,91.2,1205.4,85z"
-            ></path>
-            <path
-              style={{ opacity: 1, fill: "#FDD535" }}
-              d="M1447.4,83.9c-2.4,0.7-5.2,1.1-8.6,1.1c-19.3,0-19.6-13-39-13s-19.6,13-39,13c-3,0-5.5-0.3-7.7-0.8
-c11.6,6.6,25.4,11.8,46.9,11.8C1421.8,96,1435.7,90.7,1447.4,83.9z"
-            ></path>
-            <path
-              style={{ opacity: 1, fill: "#FDD535" }}
-              d="M985.8,72c-17.6,0.8-18.3,13-37,13c-19.4,0-19.5-13-39-13c-18.2,0-19.6,11.4-35.5,12.8
-c11.4,6.3,25,11.2,45.7,11.2C953.7,96,968.5,83.2,985.8,72z"
-            ></path>
-            <path
-              style={{ opacity: 1, fill: "#FDD535" }}
-              d="M743.8,73.5c-10.3,3.4-13.6,11.5-29,11.5c-19.4,0-19.5-13-39-13s-19.5,13-39,13c-0.9,0-1.7,0-2.5-0.1
-c11.4,6.3,25,11.1,45.7,11.1C712.4,96,727.3,84.2,743.8,73.5z"
-            ></path>
-            <path
-              style={{ opacity: 1, fill: "#FDD535" }}
-              d="M265.5,72.3c-1.5-0.2-3.2-0.3-5.1-0.3c-19.4,0-19.6,13-39,13c-19.4,0-19.6-13-39-13
-c-15.9,0-18.9,8.7-30.1,11.9C164.1,90.6,178,96,200,96C233.7,96,248.4,83.4,265.5,72.3z"
-            ></path>
-            <path
-              style={{ opacity: 1, fill: "#FDD535" }}
-              d="M1692.3,96V85c0,0,0,0-19.5,0s-19.6-13-39-13s-19.6,13-39,13c-0.1,0-0.2,0-0.4,0c11.4,6.2,24.9,11,45.6,11
-C1669.9,96,1684.8,96,1692.3,96z"
-            ></path>
-            <path
-              style={{ opacity: 1, fill: "#FDD535" }}
-              d="M25.5,72C6,72,6.1,84.9-13.5,84.9L-20,85v8.9C0.7,90.1,12.6,80.6,25.9,72C25.8,72,25.7,72,25.5,72z"
-            ></path>
-            <path
-              style={{ opacity: 1, fill: "#FDD535" }}
-              d="M-40,95.6C20.3,95.6,20.1,56,80,56s60,40,120,40s59.9-40,120-40s60.3,40,120,40s60.3-40,120-40
-s60.2,40,120,40s60.1-40,120-40s60.5,40,120,40s60-40,120-40s60.4,40,120,40s59.9-40,120-40s60.3,40,120,40s60.2-40,120-40
-s60.2,40,120,40s59.8,0,59.8,0l0.2,143H-60V96L-40,95.6z"
-            ></path>
-          </svg>
-        </div>
-      </div>
-
-      <div className="colorSection">
-        <div>
-          <Row
-            style={{ backgroundColor: "#FDD535" }}
-            className="align-items-center"
-            id="Flight__2-wrapper"
-          >
-            <Col lg={{ span: 5, offset: 1 }}>
-              <Jumbotron           data-aos="fade-up"
-style={{ color: "black" }} className="Flight__body">
-                <h2>What's a millisievert!?</h2>
-                <p>
-                  Sieverts are a measure of how much radiation is absorbed into
-                  the body. No shade to Dr. Rolf Sievert, but sieverts are
-                  tricky to understand without context. That's where the bananas
-                  come in.
-                </p>
-
-                <p>
-                  Bananas are loaded with potassium! A natural variant of
-                  potassium is potassium-40, a radioactive isotope. Since
-                  bananas are slightly radioactive, we can use them as a unit to
-                  measure radiation!
-                </p>
-              </Jumbotron>
-            </Col>
-            <Col lg={{ span: 5, offset: 1 }}>
-              <img alt="" className="left" src="https://loremflickr.com/400/266" />
-            </Col>
-          </Row>
-        </div>
 
         <Row
           id="Flight__2-wrapper"
-          style={{ backgroundColor: "#FDD535" }}
-          className="align-items-center justify-content-lg-center"
+          className="align-items-center pt-5 justify-content-lg-center"
         >
           <Col sm={{ span: 3, offset: 0 }}>
             <Jumbotron
@@ -418,39 +347,40 @@ style={{ color: "black" }} className="Flight__body">
               style={{ color: "black" }}
               className="Flight__body center-text"
             >
-              <h2>.01 millisieverts</h2>
+              <h2>.01 microsieverts</h2>
             </Jumbotron>
           </Col>
         </Row>
-      </div>
+      </Container>
 
-      <div className="colorSection">
+      <Container fluid className="section-padding bg-brown">
         <Row
-          style={{backgroundColor: "#463E35"}}
           id="Flight__2-wrapper"
           id="bananaStatWrapper"
           className="justify-content-lg-center"
         >
           <Col lg={{ span: 7, offset: 0 }}>
-            <div           data-aos="fade-up"
- style={{ color: "white" }} className="banana-stat center-text">
-              <p>Therefore, your flight exposed you to about</p>
-              <div id="bananaHighlight">400 bananas</div>
-              <p>worth of radiation.</p>
+            <div
+              data-aos="fade-up"
+              style={{ color: "white" }}
+              className="text-center"
+            >
+              <div className="lead">So, your flight exposed you to about</div>
+              <div className="size-3">
+                {Math.ceil(Math.ceil(flightTime * 30))} bananas
+              </div>
+              <div className="lead">worth of radiation.</div>
             </div>
           </Col>
         </Row>
-        <Row
-          style={{backgroundColor: "#463E35"}}
-          id="Flight__2-wrapper"
-          id="bananaStatWrapper"
-          className="justify-content-lg-center"
-        >
+        <Row className="justify-content-lg-center pt-5">
           <Col lg={{ span: 10, offset: 0 }}>
-            <div className="bananaWrapper">{generateBananas()}</div>
+            <div className="bananaWrapper">
+              {generateBananas(Math.ceil(flightTime * 30))}
+            </div>
           </Col>
         </Row>
-      </div>
+      </Container>
     </main>
   );
 }

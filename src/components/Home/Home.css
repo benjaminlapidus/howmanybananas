@@ -9,6 +9,31 @@
   font-size: 1.2rem;
 }
 
+.head {
+  color: #292929;
+  word-break: break-word;
+  left: 0px;
+  top: calc(100vh - 85%);
+  width: 75%;
+  padding-top: 68px;
+}
+
+.picker-wrapper {
+  position: absolute;
+  margin: auto;
+  right: 80px;
+  width: 40%;
+  bottom: -120px;
+  background-color: #fdd535;
+  padding: 20px;
+}
+
+.nav-link.active {
+  background-color: transparent !important;
+  opacity: 1;
+  transform: rotate(-3deg);
+}
+
 .nav-tabs .nav-link:hover {
   transform: rotate(4deg);
   opacity: 1;
@@ -16,6 +41,7 @@
 
 .nav-tabs {
   margin-bottom: 10px;
+  border-bottom: none !important;
 }
 
 #Home__triage .nav-tabs .nav-link.active {
@@ -53,9 +79,9 @@
   padding-right: 16px;
 }
 
-.Home__triage-input-wrapper div:first-of-type input {
+.first-input input {
   padding-left: 16px;
-  border-radius: 24px 0px 0px 24px;
+  border-radius: 0px 0px 0px 0px;
   outline: none;
   height: 60px;
 }
@@ -67,9 +93,18 @@
 
 .Home__triage-input-wrapper div:last-of-type button {
   padding-left: 16px;
-  border-radius: 0px 24px 24px 0px;
+  border-radius: 24px;
   background-color: #007bff;
   height: 60px;
+}
+
+@media screen and (max-width: 767px) {
+  .Home__triage-input-wrapper div:last-of-type button {
+    border-radius: 24px;
+  }
+  .first-input input {
+    border-radius: 0px 0px 0px 0px;
+  }
 }
 
 .Home__triage-input-wrapper input:focus {
@@ -80,7 +115,7 @@
 }
 
 #Home__header {
-  background-color: #463E35;
+  background-color: #463e35;
   margin-left: calc(-50vw + 50%);
   margin-right: calc(-50vw + 50%);
   padding: 15% 25%;
@@ -94,7 +129,7 @@
 
 #Home__head-wrapper {
   background-color: transparent;
-  margin-bottom:  0px;
+  margin-bottom: 0px;
 }
 
 #Home__head-img {
@@ -102,10 +137,11 @@
   box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
     rgba(0, 0, 0, 0.3) 0px 30px 60px -30px,
     rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
-    float: right;
+  float: right;
 }
 
-#Home__header div .jumbotron, #Home__section div .jumbotron {
+#Home__header div .jumbotron,
+#Home__section div .jumbotron {
   background-color: transparent;
 }
 
@@ -114,25 +150,35 @@
 }
 
 .historyImg {
-  border-radius:  12px;
+  border-radius: 12px;
   box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
     rgba(0, 0, 0, 0.3) 0px 30px 60px -30px,
     rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
 }
 
 #Home__history {
-  margin-top:  36px;
+  margin-top: 36px;
 }
 
 .flip-card {
   background-color: transparent;
-   border-radius:  12px;
+  border-radius: 12px;
   width: 250px;
   height: 375px;
-  perspective: 1000px; /* Remove this if you don't want the 3D effect */
+  perspective: 1000px;
+  /* Remove this if you don't want the 3D effect */
+}
+
+.result-wrapper {
+  border-bottom: solid 0.5px #eaeaea;
+}
+
+.result-main {
+  white-space: break-spaces;
 }
 
 /* This container is needed to position the front and back side */
+
 .flip-card-inner {
   position: relative;
   width: 100%;
@@ -140,34 +186,38 @@
   text-align: center;
   transition: transform 0.8s;
   transform-style: preserve-3d;
-
 }
 
 /* Do an horizontal flip when you move the mouse over the flip box container */
+
 .flip-card:hover .flip-card-inner {
   transform: rotateY(180deg);
 }
 
 /* Position the front and back side */
-.flip-card-front, .flip-card-back {
+
+.flip-card-front,
+.flip-card-back {
   position: absolute;
   width: 100%;
   height: 100%;
-  -webkit-backface-visibility: hidden; /* Safari */
+  -webkit-backface-visibility: hidden;
+  /* Safari */
   backface-visibility: hidden;
-   border-radius:  12px;
- 
+  border-radius: 12px;
 }
 
 /* Style the front side (fallback if image is missing) */
+
 .flip-card-front {
   background-color: #bbb;
   color: black;
 }
 
 /* Style the back side */
+
 .flip-card-back {
-  background-color: #463E35;
+  background-color: #463e35;
   color: white;
   transform: rotateY(180deg);
 }
