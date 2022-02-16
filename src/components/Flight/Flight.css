@@ -11,8 +11,51 @@
 
 .section-padding {
   padding: 10rem 0;
+  position: relative;
 }
 
+.custom-shape-divider-bottom-1644902282 {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+  line-height: 0;
+  transform: rotate(180deg);
+}
+
+.custom-shape-divider-bottom-1644902282 svg {
+  position: relative;
+  display: block;
+  width: calc(100% + 1.3px);
+  height: 49px;
+}
+
+.custom-shape-divider-bottom-1644902282 .shape-fill {
+  fill: #463e35;
+}
+
+.custom-shape-divider-top-1644902677 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+  line-height: 0;
+  transform: rotate(180deg);
+}
+
+.custom-shape-divider-top-1644902677 svg {
+  position: relative;
+  display: block;
+  width: calc(100% + 1.3px);
+  height: 49px;
+  transform: rotateY(180deg);
+}
+
+.custom-shape-divider-top-1644902677 .shape-fill {
+  fill: #463e35;
+}
 /* -- Row BG Color -- */
 
 .container {

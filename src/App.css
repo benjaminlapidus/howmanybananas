@@ -6,25 +6,19 @@ html {
 /*Nav bar */
 
 #main-nav {
-  position: fixed;
-  display: flex;
-  top: 0px;
-  left: 0px;
-  right: 0px;
-  z-index: 15000;
-  justify-content: space-between;
+  z-index: 1000;
   font-size: 1.25rem;
   transition: all 0.4s ease-in-out;
-  -webkit-transition: #fff 0.5s cubic-bezier(0.25, 0.1, 0.3, 1);
-  transition: #fff 0.5s cubic-bezier(0.25, 0.1, 0.3, 1);
-  transition-property: #fff;
-  -webkit-transition-property: #fff, -webkit-backdrop-filter;
-  transition-property: #fff, -webkit-backdrop-filter;
-  transition-property: #fff, backdrop-filter;
-  transition-property: #fff, backdrop-filter, -webkit-backdrop-filter;
-  -webkit-backdrop-filter: saturate(180%) blur(15px);
-  backdrop-filter: saturate(180%) blur(15px);
-  background-color: rgba(255, 255, 255, 0.3);
+  -webkit-transition: transparent 0.5s cubic-bezier(0.25, 0.1, 0.3, 1);
+  transition: transparent 0.5s cubic-bezier(0.25, 0.1, 0.3, 1);
+  transition-property: transparent;
+  -webkit-transition-property: transparent, -webkit-backdrop-filter;
+  transition-property: transparent, -webkit-backdrop-filter;
+  transition-property: transparent, backdrop-filter;
+  transition-property: transparent, backdrop-filter, -webkit-backdrop-filter;
+  -webkit-backdrop-filter: saturate(100%) blur(8px);
+  backdrop-filter: saturate(100%) blur(8px);
+  background-color: rgba(253, 213, 53);
 }
 
 .full-height {
@@ -54,6 +48,15 @@ html {
 
 .bg-yellow {
   background-color: #fdd535;
+}
+
+.bg-yellow-gradient {
+  background: rgb(253, 213, 53);
+  background: linear-gradient(
+    90deg,
+    rgba(253, 213, 53, 1) 0%,
+    rgba(255, 220, 79, 1) 100%
+  );
 }
 
 .bg-blue {
@@ -155,12 +158,13 @@ body {
 }
 
 .size-0 {
-  font-size: 5rem;
+  font-size: calc((80vw - 3.5rem) / 7);
+  line-height: 85%;
 }
 @media screen and (min-width: 768px) {
   .size-0 {
-    font-size: calc(10.5rem + 3.75 * ((100vw - 52rem) / 42));
-    line-height: 80%;
+    font-size: calc((80vw - 3.5rem) / 7);
+    line-height: 85%;
   }
 }
 
@@ -188,12 +192,12 @@ body {
   }
 }
 .size-3 {
-  font-size: 1.625rem;
+  font-size: 2.625rem;
   letter-spacing: -0.02em;
 }
 @media screen and (min-width: 768px) {
   .size-3 {
-    font-size: calc(1.625rem + 2 * ((100vw - 48rem) / 42));
+    font-size: calc(2.125rem + 2 * ((100vw - 48rem) / 42));
   }
 }
 @media screen and (min-width: 1440px) {
@@ -202,7 +206,7 @@ body {
   }
 }
 .size-4 {
-  font-size: 1.625rem;
+  font-size: 1.325rem;
   letter-spacing: -0.02em;
 }
 @media screen and (min-width: 768px) {
